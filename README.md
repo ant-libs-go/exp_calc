@@ -10,8 +10,8 @@
 ```golang
 // 注册操作符
 Register("in", func(p interface{}, entry *entry) (bool, error) {
-// 解析p中的参数，与entry中的args进行对比判断
-code ...
+	// 解析p中的参数，与entry中的args进行对比判断
+	code ...
 })
 
 // 创建calc实例
