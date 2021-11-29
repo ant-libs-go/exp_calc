@@ -14,23 +14,23 @@ import (
 )
 
 // TODO, 逐步补充常用运算符，等于、大于、小于、包含等
-var registry = map[string]func(p interface{}, entry *entry) (bool, error){
-	"turn": func(p interface{}, entry *entry) (bool, error) { return entry.args.(bool), nil },
+var registry = map[string]func(p interface{}, entry *Entry) (bool, error){
+	"turn": func(p interface{}, entry *Entry) (bool, error) { return entry.Args.(bool), nil },
 }
 
-func Register(name string, fn func(p interface{}, entry *entry) (bool, error)) {
+func Register(name string, fn func(p interface{}, entry *Entry) (bool, error)) {
 	registry[name] = fn
 }
 
-type entry struct {
+type Entry struct {
 	isOperator bool
-	name       string
-	args       interface{}
-	operator   string
+	Name       string
+	Args       interface{}
+	Operator   string
 }
 
 type Calc struct {
-	entries []*entry
+	entries []*Entry
 }
 
 // exp, format see function "exp2Entry":
@@ -44,34 +44,34 @@ func New(exp string) *Calc {
 func (this *Calc) Calculate(p interface{}) (r bool, err error) {
 	stack := list.New()
 	for _, one := range this.entries {
-		if _, ok := registry[one.operator]; one.isOperator == false && !ok {
-			err = fmt.Errorf("operator#%s not support", one.operator)
+		if _, ok := registry[one.Operator]; one.isOperator == false && !ok {
+			err = fmt.Errorf("operator#%s not support", one.Operator)
 			return
 		}
 
-		switch one.operator {
+		switch one.Operator {
 		case "&":
 			var r1, r2 bool
-			e1 := stack.Remove(stack.Back()).(*entry)
-			if r1, err = registry[e1.operator](p, e1); err != nil {
+			e1 := stack.Remove(stack.Back()).(*Entry)
+			if r1, err = registry[e1.Operator](p, e1); err != nil {
 				return
 			}
-			e2 := stack.Remove(stack.Back()).(*entry)
-			if r2, err = registry[e2.operator](p, e2); err != nil {
+			e2 := stack.Remove(stack.Back()).(*Entry)
+			if r2, err = registry[e2.Operator](p, e2); err != nil {
 				return
 			}
-			stack.PushBack(&entry{isOperator: false, operator: "turn", args: r1 && r2})
+			stack.PushBack(&Entry{isOperator: false, Operator: "turn", Args: r1 && r2})
 		case "|":
 			var r1, r2 bool
-			e1 := stack.Remove(stack.Back()).(*entry)
-			if r1, err = registry[e1.operator](p, e1); err != nil {
+			e1 := stack.Remove(stack.Back()).(*Entry)
+			if r1, err = registry[e1.Operator](p, e1); err != nil {
 				return
 			}
-			e2 := stack.Remove(stack.Back()).(*entry)
-			if r2, err = registry[e2.operator](p, e2); err != nil {
+			e2 := stack.Remove(stack.Back()).(*Entry)
+			if r2, err = registry[e2.Operator](p, e2); err != nil {
 				return
 			}
-			stack.PushBack(&entry{isOperator: false, operator: "turn", args: r1 || r2})
+			stack.PushBack(&Entry{isOperator: false, Operator: "turn", Args: r1 || r2})
 		// case "+":
 		//	stack.PushBack(Do(stack.Remove(stack.Back())) - Do(stack.Remove(stack.Back())))
 		default:
@@ -79,29 +79,29 @@ func (this *Calc) Calculate(p interface{}) (r bool, err error) {
 		}
 	}
 
-	e := stack.Remove(stack.Back()).(*entry)
-	r, err = registry[e.operator](p, e)
+	e := stack.Remove(stack.Back()).(*Entry)
+	r, err = registry[e.Operator](p, e)
 	return
 }
 
 // 表达式转计算因子
-func (this *Calc) exp2Entry(exp string, isOperator bool) (r *entry) {
-	r = &entry{isOperator: isOperator}
+func (this *Calc) exp2Entry(exp string, isOperator bool) (r *Entry) {
+	r = &Entry{isOperator: isOperator}
 
 	if r.isOperator == true {
-		r.operator = exp
+		r.Operator = exp
 		return
 	}
 
 	// 将args进行复杂语句解析，如 util.SerializeValue
 	t := strings.Split(exp, ":")
-	r.name, r.operator, r.args = t[0], t[1], t[2]
+	r.Name, r.Operator, r.Args = t[0], t[1], t[2]
 	return
 }
 
 // 拆解表达式为中缀因子表
-func (this *Calc) parseExp(exp string) (r []*entry) {
-	r = make([]*entry, 0, 10)
+func (this *Calc) parseExp(exp string) (r []*Entry) {
+	r = make([]*Entry, 0, 10)
 
 	for first, second := 0, 0; ; {
 		if len(exp) <= second {
@@ -134,33 +134,33 @@ func (this *Calc) parseExp(exp string) (r []*entry) {
 }
 
 // 中缀因子表转后缀因子表
-func (this *Calc) infixExp2PostfixExp(entries []*entry) (r []*entry) {
-	r = make([]*entry, 0, len(entries))
+func (this *Calc) infixExp2PostfixExp(entries []*Entry) (r []*Entry) {
+	r = make([]*Entry, 0, len(entries))
 
 	stack := list.New()
 	for _, one := range entries {
-		switch one.operator {
+		switch one.Operator {
 		case "(": // 如左括号则入栈
 			stack.PushBack(one)
 		case ")": // 如右括号则将元素弹出且写入中缀因子表，直到遇到左括号
 			for stack.Len() > 0 {
 				t := stack.Back()
-				if t.Value.(*entry).operator == "(" {
+				if t.Value.(*Entry).Operator == "(" {
 					stack.Remove(t)
 					break
 				}
-				r = append(r, stack.Remove(t).(*entry))
+				r = append(r, stack.Remove(t).(*Entry))
 			}
 		case "&", "|": // 如操作符，遇到高优先级运算符则将元素弹出且写入中缀因子表，直到遇到低优先级运算符元素
 			for stack.Len() > 0 {
 				t := stack.Back()
-				if t.Value.(*entry).operator == "(" {
+				if t.Value.(*Entry).Operator == "(" {
 					break
 				}
-				// if (one.operator == "*" || one.operator == "/") && (t.Value.(*entry).operator == "+" || t.Value.(*entry).operator == "-") {
+				// if (one.Operator == "*" || one.Operator == "/") && (t.Value.(*Entry).Operator == "+" || t.Value.(*Entry).Operator == "-") {
 				//  break
 				// }
-				r = append(r, stack.Remove(t).(*entry))
+				r = append(r, stack.Remove(t).(*Entry))
 			}
 			stack.PushBack(one)
 		default: // 如计算因子，直接写入中缀因子表
@@ -169,7 +169,7 @@ func (this *Calc) infixExp2PostfixExp(entries []*entry) (r []*entry) {
 	}
 
 	for stack.Len() > 0 { // 将栈中所有元素输出
-		r = append(r, stack.Remove(stack.Back()).(*entry))
+		r = append(r, stack.Remove(stack.Back()).(*Entry))
 	}
 	return
 }

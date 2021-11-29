@@ -15,7 +15,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	Register("in", func(p interface{}, entry *entry) (bool, error) {
+	Register("in", func(p interface{}, entry *Entry) (bool, error) {
 		return true, nil
 	})
 	os.Exit(m.Run())
