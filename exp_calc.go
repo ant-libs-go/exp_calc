@@ -11,6 +11,8 @@ import (
 	"container/list"
 	"fmt"
 	"strings"
+
+	"github.com/ant-libs-go/util"
 )
 
 // TODO, 逐步补充常用运算符，等于、大于、小于、包含等
@@ -90,6 +92,12 @@ func (this *Calc) exp2Entry(exp string, isOperator bool) (r *Entry) {
 
 	if r.isOperator == true {
 		r.Operator = exp
+		return
+	}
+
+	// 对布尔值进行特判
+	if exp == "true" || exp == "false" {
+		r.Operator, r.Args = "turn", util.If(exp == "true", true, false)
 		return
 	}
 
