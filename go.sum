@@ -1,7 +1,7 @@
-github.com/ant-libs-go/util v0.1.62 h1:9CJXiK/Z1T0OrYbIh84R+caJX4vvDJMUP64WtcohaGk=
-github.com/ant-libs-go/util v0.1.62/go.mod h1:v1BKJU80vip7TzC9qrU+bHWv5IcqOSqole4I9eTaas0=
-github.com/apache/thrift/lib/go/thrift v0.0.0-20210120171102-e27e82c46ba4 h1:orNYqmQGnSjgOauLWjHEp9/qIDT98xv/0Aa4Zet3/Y8=
-github.com/apache/thrift/lib/go/thrift v0.0.0-20210120171102-e27e82c46ba4/go.mod h1:V/LzksIyqd3KZuQ2SunvReTG/UkArhII1dAWY5U1sCE=
+github.com/ant-libs-go/util v0.1.63 h1:yy1q9qgoXZXvrn6m25fSyChe6rmCzlhsnQsfqF9Bj9Q=
+github.com/ant-libs-go/util v0.1.63/go.mod h1:gbQXJnPeQzuPZ7+oiO32KVVDiWlDSHHmu3+dEHMt6x4=
+github.com/apache/thrift v0.14.0 h1:vqZ2DP42i8th2OsgCcYZkirtbzvpZEFx53LiWDJXIAs=
+github.com/apache/thrift v0.14.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/cihub/seelog v0.0.0-20170130134532-f561c5e57575/go.mod h1:9d6lWj8KzO/fd/NrVaLscBKmPigpZpn5YawRPw+e3Yo=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.4.0-rc.1/go.mod h1:ceaxUfeHdC40wWswd/P6IGgMaK3YpKi5j83Wpe3EHw8=
